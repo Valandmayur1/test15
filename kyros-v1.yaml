@@ -1,0 +1,149 @@
+# https://davidgarcia.dev/posts/how-to-split-open-api-spec-into-multiple-files/
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Kyros Internal API
+servers:
+  - url: http://localhost:4000
+  - url: https://creed.dev.kyros.care
+  - url: https://jim.dev.kyros.care
+security:
+  - OAuth2:
+      - All
+
+tags:
+  - name: oauth
+    description: Authentication endpoints
+  - name: care-team
+    description: Endpoints for managing care teams
+  - name: check-in
+    description: All the APIs related to users' check-ins
+  - name: users
+    description: For managing users
+  - name: credentials
+    description: For managing users credentials
+  - name: verification
+    description: For verifying user's identities before doing sensetive actions
+  - name: meets
+    description: For managing meetings between users
+  - name: files
+    description: Endpoints for testing and debugging the S3 integration. These endpoints will not be available in production!
+  - name: relationships
+    description: manages relationships between two or parties
+  - name: billables
+    description: Manages billables for the platform
+  - name: time-tables
+    description: a service for determining calendar availability
+  - name: reporting
+    description: repoting service for admins and other mantenence functions
+
+paths:
+  # ******* OAUTH *******
+  /api/v1/oauth/token:
+    $ref: "./paths/oauth.yaml"
+  # ******* CARE TEAM *******
+  /api/v1/care-teams/{care-team_id}:
+    $ref: "./paths/care-team.yaml"
+  /api/v1/care-teams:
+    $ref: "./paths/care-teams.yaml"
+  /api/v1/care-teams/{care-team_id}/members:
+    $ref: "./paths/care-team.members.yaml"
+  /api/v1/care-teams/{care-team_id}/members/{member_id}:
+    $ref: "./paths/care-team.member.yaml"
+  /api/v1/care-teams/{invite_hash}:
+    $ref: "./paths/care-teams.invites.yaml"
+  # ******* CHECK IN *******
+  /api/v1/check-in:
+    $ref: "./paths/check-ins.yaml"
+  /api/v1/check-in/{check-in_hash}:
+    $ref: "./paths/check-in.hash.yaml"
+  /api/v1/check-in/{check-in_id}:
+    $ref: "./paths/check-in.yaml"
+  /api/v1/check-in/{check-in_id}/share:
+    $ref: "./paths/check-in.share.yaml"
+  # ******* CREDENTIALS *******
+  /api/v1/credentials:
+    $ref: "./paths/credentials.yaml"
+  /api/v1/credentials/types:
+    $ref: "./paths/credentials.types.yaml"
+  /api/v1/credentials/{credential_id}:
+    $ref: "./paths/credential.yaml"
+  /api/v1/credentials/{credential_id}/image/{file_flag}:
+    $ref: "./paths/credential.image.yaml"
+  # ******* RELATIONSHIPS *******
+  /api/v1/relationships:
+    $ref: "./paths/relationships.yaml"
+  /api/v1/relationships/{id}:
+    $ref: "./paths/relationship.yaml"
+  # ******* USERS *******
+  /api/v1/users:
+    $ref: "./paths/users.yaml"
+  /api/v1/users/{user_id}:
+    $ref: "./paths/user.yaml"
+  /api/v1/users/{user_id}/photos:
+    $ref: "./paths/user.photos.yaml"
+  /api/v1/users/photos/{key}:
+    $ref: "./paths/users.photos.yaml"
+  /api/v1/users/forgotpassword:
+    $ref: "./paths/users.resetpassword.yaml"
+  /api/v1/users/change_email:
+    $ref: "./paths/users.change_email.yaml"
+  /api/v1/users/{user_id}/password:
+    $ref: "./paths/users.password.yaml"
+  /api/v1/users/{user_id}/phone:
+    $ref: "./paths/users.phone.yaml"
+  /api/v1/users/verify/{hash}:
+    $ref: "./paths/users.verify.yaml"
+
+  # ******* MEETS *******
+  /api/v1/meets:
+    $ref: "./paths/meets.yaml"
+  /api/v1/meets/{meet_id}:
+    $ref: "./paths/meet.yaml"
+  /api/v1/meets/{meet_id}/attendees:
+    $ref: "./paths/meet.attendees.yaml"
+  /api/v1/meets/{meet_id}/attendees/{attendee_id}:
+    $ref: "./paths/meet.attendee.yaml"
+  /api/v1/meets/{meet_id}/locations:
+    $ref: "./paths/meet.locations.yaml"
+  /api/v1/meets/{meet_id}/locations/{location_id}:
+    $ref: "./paths/meet.location.yaml"
+  /api/v1/meets/{meet_id}/notes:
+    $ref: "./paths/meet.notes.yaml"
+  /api/v1/meets/{meet_id}/notes/{note_id}:
+    $ref: "./paths/meet.note.yaml"
+  # ******* FILES (DEBUG ONLY) *******
+  /api/v1/fs:
+    $ref: "./paths/files.yaml"
+  /api/v1/fs/{uuid}:
+    $ref: "./paths/file.yaml"
+  /api/v1/fs/{uuid}/temp:
+    $ref: "./paths/file.temp.yaml"
+  /api/v1/fs/temp/{key}:
+    $ref: "./paths/files.temp.yaml"
+  # ******* VERIFICATION *******
+  /api/v1/verification/{verification_id}:
+    $ref: "./paths/verification.yaml"
+  # ******* BILLABLES *******
+  /api/v1/billables:
+    $ref: "./paths/billables.yaml"
+  # ******* TIME TABLES *******
+  /api/v1/time-tables:
+    $ref: "./paths/time-tables.yaml"
+
+  # ******* Reporting *******
+  /api/v1/reports/billables.csv:
+    $ref: "./paths/reports-billables.yaml"
+
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        password:
+          refreshUrl: /api/v1/oauth/token
+          tokenUrl: /api/v1/oauth/token
+          scopes:
+            all: Scopes is ignored currently
+  schemas:
+    $ref: "./schemas/_index.yaml"
